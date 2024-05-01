@@ -25,18 +25,30 @@ function generateOptions(correctAnswer) {
     return shuffleArray(Array.from(options));
 }
 
-function getCategory(time) {
-    if (time < 2) {
-      return "Mennesklig datamaskin";
-    } else if (time < 4) {
-      return "Mattegeni";
-    } else if (time < 7) {
-      return "B-student";
-    } else if (time < 10) {
-      return "Sannsynligvis sovnet";
-    } else {
-      return "High School Drop Out";
+function calculateMeanTime(times) {
+    if (times.length === 0) {
+        return 0;
     }
+    const sum = times.reduce((total, time) => total + time, 0);
+    const meanTime = sum / times.length;
+    return meanTime.toFixed(3);
+}
+
+function getCategory(time) {
+    let category = "";
+    if (time < 2) {
+        category = "Mennesklig datamaskin";
+    } else if (time < 4) {
+        category = "Mattegeni";
+    } else if (time < 7) {
+        category = "B-student";
+    } else if (time < 10) {
+        category = "Sannsynligvis sovnet";
+    } else {
+        category = "High School Drop Out";
+    }
+
+    return category + "! Du brukte " + Math.floor(time) + " sekunder";
 }
 
 function MathGame() {
@@ -47,6 +59,7 @@ function MathGame() {
     const [correctAnswer, setCorrectAnswer] = useState(num1 + num2);
     const [options, setOptions] = useState(generateOptions(correctAnswer));
     const [startTime, setStartTime] = useState(new Date());
+    const [times, setTimes] = useState([]);
 
     const refreshGame = () => {
         const newNum1 = getRandomNumber();
@@ -61,13 +74,19 @@ function MathGame() {
 
     const checkAnswer = (answer) => {
         if (answer === correctAnswer) {
-            const time = new Date().getTime() - startTime.getTime();
-            setCategory(getCategory(time / 1000));
+            const time = (new Date().getTime() - startTime.getTime()) / 1000;
+            setTimes([...times, time]);
+            setCategory(getCategory(time));
             refreshGame();
         } else {
             setIncorrect(true);
             setCategory(null);
         }
+    };
+
+    const newGame = () => {
+        setTimes([]);
+        refreshGame();
     };
 
     return (
@@ -98,9 +117,14 @@ function MathGame() {
                         {category}
                     </Typography>
                 )}
+                {times.length && (
+                    <Typography align="center" sx={{ my: 4 }}>
+                        Din snittid er {calculateMeanTime(times)} sekunder
+                    </Typography>
+                )}
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                     <Button
-                        onClick={refreshGame}
+                        onClick={newGame}
                         variant="outlined"
                         color="primary"
                     >
