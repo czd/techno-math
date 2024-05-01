@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { Button, Box, Typography, Container, Grid } from "@mui/material";
 
+function getTime(startTime) {
+    const elapsedTimeMilliseconds = new Date().getTime() - startTime.getTime();
+    return elapsedTimeMilliseconds / 1000;
+}
+
 function getRandomNumber(max = 20) {
     return Math.floor(Math.random() * max) + 1;
 }
@@ -74,7 +79,7 @@ function MathGame() {
 
     const checkAnswer = (answer) => {
         if (answer === correctAnswer) {
-            const time = (new Date().getTime() - startTime.getTime()) / 1000;
+            const time = getTime(startTime);
             setTimes([...times, time]);
             setCategory(getCategory(time));
             refreshGame();
@@ -85,6 +90,7 @@ function MathGame() {
     };
 
     const newGame = () => {
+        setCategory(null);
         setTimes([]);
         refreshGame();
     };
@@ -117,7 +123,7 @@ function MathGame() {
                         {category}
                     </Typography>
                 )}
-                {times.length && (
+                {times.length > 0 && (
                     <Typography align="center" sx={{ my: 4 }}>
                         Din snittid er {calculateMeanTime(times)} sekunder
                     </Typography>
