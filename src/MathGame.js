@@ -25,7 +25,7 @@ function generateOptions(correctAnswer) {
     return shuffleArray(Array.from(options));
 }
 
-function evaluateCategory(time) {
+function getCategory(time) {
     if (time < 2) {
       return "Mennesklig datamaskin";
     } else if (time < 4) {
@@ -62,7 +62,7 @@ function MathGame() {
     const checkAnswer = (answer) => {
         if (answer === correctAnswer) {
             const time = new Date().getTime() - startTime.getTime();
-            setCategory(evaluateCategory(time / 1000));
+            setCategory(getCategory(time / 1000));
             refreshGame();
         } else {
             setIncorrect(true);
